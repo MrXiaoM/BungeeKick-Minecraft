@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -77,5 +78,10 @@ public class PlayerListener implements Listener {
         if (msg != null) {
             event.getPlayer().sendMessage(msg);
         }
+    }
+
+    @EventHandler
+    public void onPlayerLostConnection(PlayerDisconnectEvent event) {
+        kickMessages.remove(event.getPlayer().getSocketAddress());
     }
 }
