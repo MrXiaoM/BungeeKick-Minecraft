@@ -5,10 +5,8 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 
 /*
 
@@ -39,20 +37,7 @@ public class BungeeKick extends Plugin {
 
         cFile = new File(this.getDataFolder(), "/config.yml");
 
-        if (!cFile.exists()) {
-            try (FileWriter fw = new FileWriter(cFile)) {
-                try (BufferedWriter out = new BufferedWriter(fw)) {
-                    out.write("# This is where the player is kicked to. This is usually the lobby/hub server\n"
-                            + "ServerName: \'lobby\'\n"
-                            + "# Message to be sent to the player who has been kicked. This message is followed by the kick reason"
-                            + "KickMessage: \'&6You have been kicked! Reason:&4 \'\n"
-                            + "# Set this to True if you want the kicked player to be able to see the kick reason."
-                            + "ShowKickMessage: true\n");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        if (!cFile.exists()) saveDefaultConfig();
 
         cProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
         try {
@@ -68,4 +53,19 @@ public class BungeeKick extends Plugin {
         config = null;
     }
 
+    public void saveDefaultConfig() {
+        try (InputStream in = this.getResourceAsStream("config.yml")) {
+            try (FileOutputStream os = new FileOutputStream(cFile, false)) {
+                try (BufferedOutputStream out = new BufferedOutputStream(os)) {
+                    int data;
+                    while((data = in.read()) != -1) {
+                        out.write(data);
+                    }
+                    out.flush();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
