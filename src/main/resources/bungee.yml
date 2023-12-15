@@ -1,4 +1,4 @@
 name: BungeeKick
 main: me.vik1395.BungeeKick.BungeeKick
-version: 1.2
+version: '${version}'
 author: Vik1395
