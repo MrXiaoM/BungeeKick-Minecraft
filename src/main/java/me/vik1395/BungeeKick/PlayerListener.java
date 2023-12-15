@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -32,6 +33,7 @@ You may find an abridged version of the License at http://creativecommons.org/li
 public class PlayerListener implements Listener {
 
     BungeeKick plugin;
+    Map<SocketAddress, TextComponent> kickMessages = new HashMap<>();
 
     public PlayerListener(BungeeKick plugin) {
         this.plugin = plugin;
@@ -75,7 +77,15 @@ public class PlayerListener implements Listener {
 	        msg = ChatColor.translateAlternateColorCodes('&', msg);
 	        String kmsg = ChatColor.stripColor(BaseComponent.toLegacyText(ev.getKickReasonComponent()));
 	        msg = msg + kmsg;
-	        ev.getPlayer().sendMessage(new TextComponent(msg));
+            kickMessages.put(ev.getPlayer().getSocketAddress(), new TextComponent(msg));
+        }
+    }
+
+    @EventHandler
+    public void onPlayerConnected(ServerConnectedEvent event) {
+        TextComponent msg = kickMessages.remove(event.getPlayer().getSocketAddress());
+        if (msg != null) {
+            event.getPlayer().sendMessage(msg);
         }
     }
 }
